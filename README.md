@@ -1,6 +1,8 @@
 # Kortype
+[![Build
+Status](https://travis-ci.org/arnkorty/kortype.svg?branch=master)](https://travis-ci.org/arnkorty/kortype)     [![Code Climate](https://codeclimate.com/github/arnkorty/kortype/badges/gpa.svg)](https://codeclimate.com/github/arnkorty/kortype) [![Dependency Status](https://gemnasium.com/arnkorty/kortype.svg)](https://gemnasium.com/arnkorty/kortype) [![Test Coverage](https://codeclimate.com/github/arnkorty/kortype/badges/coverage.svg)](https://codeclimate.com/github/arnkorty/kortype/coverage)
 
-a ruby type force for class.
+a simple ruby type force for class.
 
 ## Installation
 
@@ -27,12 +29,25 @@ class A
   kortype :num1, :num2, type: Fixnum
 end
 a = A.new
-a.foo = '2012-1-1' 
+a.foo = '2012-1-1'
 p a.foo # 2012-01-01 00:00:00 +0800
 a.foo = 'fsf' # will be raise a error
 a.bar = 233 #  "233"
 a.num1 = '232' # 232
 a.num2 = 'fsd' # 0
+```
+
+```ruby
+class B
+  include Kortype
+  kortype :bar, type: String, default: 'bar'
+  kortype :foo, type: String, default:  ->{ Time.now.to_s }
+  kortype :file, type: File, parse: ->(file) { File.new file }
+end
+b = B.new
+b.bar # 'bar'
+b.foo # Time.now.to_s
+b.file = 'Gemfile' # = File.new 'Gemfile'
 ```
 
 ## Development
@@ -49,4 +64,3 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/[USERN
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-

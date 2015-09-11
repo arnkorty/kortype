@@ -13,12 +13,12 @@ module Kortype
 
     def value
       @value ||= if options[:default]
-        if Proc === options[:default]
-          options[:default].call
-        else
-          options[:default]
-        end
-      end
+                   self.value = if Proc === options[:default]
+                             options[:default].call
+                           else
+                             options[:default]
+                           end
+                 end
     end
 
     def value=(value)
@@ -31,7 +31,7 @@ module Kortype
       else
         if @type.respond_to? :parse
           begin
-          @value = @type.parse value
+            @value = @type.parse value
           rescue
             raise Kortype::TypeError.new, "#{value} is not parse to a #{@type}"
           end
@@ -39,12 +39,15 @@ module Kortype
           @value = value
         end
       end
-      raise Kortype::TypeError.new, "#{value} is not parse to a #{@type}" unless @type === @value
+      unless @type === @value
+        @value = nil
+        raise Kortype::TypeError.new, "#{value} is not parse to a #{@type}"
+      end
       @value
     end
 
     # def dup
-      #Kortype::Type.new @name, @type, @options
+    #Kortype::Type.new @name, @type, @options
     #end
   end
 end
