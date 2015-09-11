@@ -2,6 +2,7 @@ require "kortype/version"
 require 'kortype/type_error'
 require 'kortype/parse'
 require 'kortype/type'
+require 'pry'
 
 #require 'active_support/concern'
 #require 'active_support/hash_with_indifferent_access'
@@ -20,6 +21,24 @@ module Kortype
                            end
                            cols
                          end
+  end
+
+  def valid?
+    !kortype_columns.values.any?{|s| !s.valid?}
+  end
+
+  def errors
+    kortype_columns.values.select{|s| !s.valid?}
+  end
+
+  def valid_for?(col)
+    kortype_columns[col.to_sym].valid?
+  end
+
+  def error_msg_for(col)
+    if !valid_for?(col)
+      kortype_columns[col.to_sym].options[:error_msg]
+    end
   end
 
   module ClassMethods

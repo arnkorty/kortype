@@ -20,8 +20,8 @@ describe Kortype do
     end
     myclass = MyClass.new
     myclass.foo = 'foo'
-    myclass.foo == 'foo'
-    myclass.foo != MyClass.kortype_columns[:foo].value
+    expect(myclass.foo).to eq 'foo'
+    expect(MyClass.kortype_columns[:foo].value).to eq nil
   end
 
   it 'test type force for class' do
@@ -32,7 +32,7 @@ describe Kortype do
     myclass = Myclass.new
     myclass.foo = '2012-12-01'
     expect(myclass.foo.class).to eq Time
-    myclass.foo.year == 2012
+    expect(myclass.foo.year).to eq 2012
     expect{ myclass.foo = 'fsdf' }.to raise_error(Kortype::TypeError)
   end
 
@@ -43,9 +43,9 @@ describe Kortype do
       kortype :bar, type: Integer, default: -> { 23 + 100}
     end
     myclass = Myclass.new
-    myclass.foo.class == Time
-    myclass.foo.to_i == Time.now.to_i
-    myclass.bar == 123
+    expect(myclass.foo.class).to eq Time
+    expect(myclass.foo.to_i).to eq Time.now.to_i
+    expect(myclass.bar).to eq 123
   end
 
   it 'check custom parse' do
@@ -64,14 +64,28 @@ describe Kortype do
         else
           val
         end
-      }, default: './Gemfile'
+      }, default: File.new('./Gemfile')
     end
 
     myclass = Myclass.new
-    myclass.foo == nil
+    expect(myclass.foo).to eq nil
     myclass.foo = '/'
-    myclass.foo.class == File
-    myclass.foo.path == '/'
-    myclass.bar.class == File
+    expect(myclass.foo.class).to eq File
+    expect(myclass.foo.path).to eq '/'
+    expect(myclass.bar.class).to eq File
+  end
+
+  it 'check regexp validate column' do
+    class Myclass1
+      include Kortype
+      kortype :foo, type: String, validate: /fff/, error_msg: 'the value is error'
+    end
+    myclass = Myclass1.new
+    myclass.foo = 'fsdf'
+    expect(myclass.valid?).to eq false
+    expect(myclass.error_msg_for(:foo)).to eq 'the value is error'
+    myclass.foo = 'fffff'
+    expect(myclass.valid?).to eq true
+    expect(myclass.error_msg_for(:foo)).to eq nil
   end
 end

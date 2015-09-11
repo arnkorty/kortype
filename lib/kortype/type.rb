@@ -46,6 +46,18 @@ module Kortype
       @value
     end
 
+    def valid?
+      return false if !@value && @options[:required]
+      if @value && @options[:validate]
+        if Regexp === @options[:validate]
+          return !!(@value =~ @options[:validate])
+        elsif Proc === @options[:validate]
+          return @options[:validate].call(@value)
+        end
+      end
+      true
+    end
+
     # def dup
     #Kortype::Type.new @name, @type, @options
     #end
