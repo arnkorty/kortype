@@ -2,7 +2,6 @@ require "kortype/version"
 require 'kortype/type_error'
 require 'kortype/parse'
 require 'kortype/type'
-require 'pry'
 
 #require 'active_support/concern'
 #require 'active_support/hash_with_indifferent_access'
@@ -37,7 +36,7 @@ module Kortype
 
   def error_msg_for(col)
     if !valid_for?(col)
-      kortype_columns[col.to_sym].options[:error_msg]
+      kortype_columns[col.to_sym].options[:error_msg] || "#{send(col)} is not a valid value"
     end
   end
 

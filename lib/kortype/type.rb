@@ -1,6 +1,6 @@
 module Kortype
   class Type
-    attr_reader :name, :type, :options
+    attr_reader :name, :type, :options, :value, :default
     def initialize name, type, options = {}
       @name = name
       if type.is_a?(String) || type.is_a?(Symbol)
@@ -9,16 +9,10 @@ module Kortype
         @type = type
       end
       @options = options
-    end
-
-    def value
-      @value ||= if options[:default]
-                   self.value = if Proc === options[:default]
-                             options[:default].call
-                           else
-                             options[:default]
-                           end
-                 end
+      @default = @options[:default]
+      if @default
+        @value =  (Proc === @default ? @default.call : @default)
+      end
     end
 
     def value=(value)
